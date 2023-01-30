@@ -1,0 +1,20 @@
+extends layout 
+
+block content 
+  h3.my-3 ルームの編集
+  form(action=`/rooms/${room.roomId}?edit=1`, method="post")
+    div.form-group
+      label(for="roomName") ルーム名
+      input(type="text" name="roomName" value=room.roomName)#roomName.form-control
+    div.form-group
+      label(for="bpm") BPM 
+      input(type="number", name="bpm", value=room.BPM)#bpm.form-control
+    div.form-group
+      h5 メモ
+      textarea(name="memo")#memo.form-control #{room.memo}
+    div.form-group
+      button(type="submit").btn.btn-info 以上の内容で予定を編集する
+
+  h3.my-3 危険な変更
+  form(action=`/rooms/${room.roomId}?delete=1`, method="post") 
+    button(type="submit").btn.btn-danger このルームを削除する

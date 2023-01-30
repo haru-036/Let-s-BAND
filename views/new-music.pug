@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h3 自分のパートを投稿してみよう！
+  form(action=`/${room.roomId}/musics`, method="post") 
+    div 
+      h5 音声ファイル
+      input(type="file", name="musicUrl", accept="audio/*", multiple)
+    div 
+      h5 パート
+      input(type="text", name="part")
+    div 
+      h5 メモ
+      textarea(name="memo") 
+    button(type="submit") 投稿する

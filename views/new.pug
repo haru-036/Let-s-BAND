@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  form(method="post", action="/rooms").my-3
+    div.form-group
+      label(for="roomName") ルーム名 
+      input(type="text" name="roomName")#roomName.form-control
+    div.form-group
+      label(for="bpm") BPM 
+      input(type="number", name="bpm", value="100")#bpm.form-control
+    div.form-group
+      label(for="memo") メモ
+      textarea(name="memo")#memo.form-control
+    button(type="submit").btn.btn-info ルームをつくる 

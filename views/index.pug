@@ -1,5 +1,43 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.my-3.titlebox
+    h1 Let's BAND!!
+    p.lead Let's BAND!!は、ルームを作って音楽を投稿できるサービスです
+  if user  
+    div 
+      a(href="/rooms/new").btn.btn-info.my-3 ルームをつくる
+    -var hasRoom = rooms.length > 0
+    if hasRoom 
+      h3.my-3 あなたの作ったルーム一覧
+      table.table.mb-5 
+        tr 
+          th ルーム名
+          th 更新日時
+        each room in rooms 
+          tr 
+            td 
+              a(href=`/rooms/${room.roomId}`) #{room.roomName}
+            td #{room.formattedUpdatedAt}
+
+    h3.my-3 みんなの新着ルーム
+    table.table
+      tr 
+        th ルーム名
+        th 更新日時
+      each room in allrooms 
+        tr 
+          td 
+            a(href=`/rooms/${room.roomId}`) #{room.roomName}
+          td #{room.formattedUpdatedAt}
+
+  else
+    a(href="/login").btn.loginbtn.my-3 さあ、一緒に音楽をやろう！
+    div.card.my-3
+      div.card-body
+        h3 Let's BAND!! とは…
+        ul 
+          li まず曲ごとに”ルーム”を作れます
+          li すでにリリースされている曲をコピーしてもよし、ルームの中でみんなでフレーズを考えてもよし
+          li ルームの中では、録音音源などを投稿できる
+          li コメントやメモ欄でルームの中の人たちとコミュニケーションもとれるよ
