@@ -24,6 +24,7 @@ block content
           button(data-bs-dismiss="modal", aria-label="Close").btn-close 
         div.modal-body
           form(action=`/rooms/${room.roomId}/music`, method="post", enctype="multipart/form-data") 
+            input(type="hidden" name="_csrf" value!=csrfToken)
             div.form-group.mb-3 
               label(for="musicUrl") 音声ファイル
               input(type="file" name="musicUrl" accept="audio/*")#musicUrl.form-control

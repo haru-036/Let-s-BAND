@@ -2,6 +2,7 @@ extends layout
 
 block content
   form(method="post", action="/rooms").my-3
+    input(type="hidden" name="_csrf" value!=csrfToken)
     div.form-group
       label(for="roomName") ルーム名 
       input(type="text" name="roomName")#roomName.form-control

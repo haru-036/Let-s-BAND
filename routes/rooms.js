@@ -9,6 +9,8 @@ const Room = require('../models/room');
 const User = require('../models/user');
 const Music = require('../models/music');
 const Comment = require('../models/comment');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
 const multer = require('multer');
 const updir = path.dirname(__dirname).replace(/\\/g, '/') + "/public/musics";
@@ -20,11 +22,11 @@ const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-router.get('/new', authenticationEnsurer, (req, res, next) => {
+router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
   res.render('new', { user: req.user });
 });
 
-router.post('/', authenticationEnsurer, async (req, res, next) => {
+router.post('/', authenticationEnsurer, csrfProtection, async (req, res, next) => {
   const roomId = uuidv4();
   const updatedAt = new Date();
   const room = await Room.create({
@@ -38,7 +40,7 @@ router.post('/', authenticationEnsurer, async (req, res, next) => {
   res.redirect('/rooms/' + room.roomId);
 });
 
-router.post('/:roomId/music', authenticationEnsurer, upload.single('musicUrl'), async (req, res, next) => {
+router.post('/:roomId/music', authenticationEnsurer, csrfProtection, upload.single('musicUrl'), async (req, res, next) => {
   const path = req.file.path.replace(/\\/g, "/");
   // const dest = updir + "/" + req.file.originalname;
   // fs.renameSync(path, dest);
@@ -54,7 +56,7 @@ router.post('/:roomId/music', authenticationEnsurer, upload.single('musicUrl'), 
   res.redirect('/rooms/' + req.params.roomId);
 });
 
-router.get('/:roomId', authenticationEnsurer, async (req, res, next) => {
+router.get('/:roomId', authenticationEnsurer, csrfProtection, async (req, res, next) => {
   const room = await Room.findOne({
     include:[
       {
@@ -110,7 +112,7 @@ router.get('/:roomId', authenticationEnsurer, async (req, res, next) => {
   }
 });
 
-router.get('/:roomId/edit', authenticationEnsurer, async (req, res, next) => {
+router.get('/:roomId/edit', authenticationEnsurer, csrfProtection, async (req, res, next) => {
   const room = await Room.findOne({
     where:{
       roomId: req.params.roomId
@@ -120,6 +122,7 @@ router.get('/:roomId/edit', authenticationEnsurer, async (req, res, next) => {
     res.render('edit', {
       user: req.user,
       room: room,
+      csrfToken: req.csrfToken()
     });
   }else{
     const err = new Error('指定されたルームがない、または、ルームする権限がありません');
@@ -136,7 +139,7 @@ function isMineMusic(req, music) {
   return music && parseInt(music.createdBy) === parseInt(req.user.id);
 }
 
-router.post('/:roomId', authenticationEnsurer, async (req, res, next) => {
+router.post('/:roomId', authenticationEnsurer, csrfProtection, async (req, res, next) => {
   let room = await Room.findOne({
     where: {
       roomId: req.params.roomId

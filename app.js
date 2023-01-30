@@ -7,6 +7,8 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const session = require('express-session');
 const passport = require('passport');
+const dotenv = require('dotenv');
+dotenv.config();
 
 //モデルの読み込み
 const User = require('./models/user');
@@ -24,8 +26,8 @@ User.sync().then(async () => {
 });
 
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const GOOGLE_CLIENT_ID = '491175564633-8oo5ksrorn2622tondpsulmjrh2hpju9.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = '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';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 passport.serializeUser(function (user, done) {
   done(null, user);
@@ -92,7 +94,14 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    const loginFrom = req.cookies.loginFrom;
+    //オープンリダイレクタ脆弱性対策
+    if (loginFrom && loginFrom.startsWith('/')) {
+      res.clearCookie('loginFrom');
+      res.redirect(loginFrom);
+      }else{
+      res.redirect('/');
+      }
 });
 
 // catch 404 and forward to error handler

@@ -10,7 +10,7 @@
   position: relative;/*配置（基準）*/
   }
 .titlebox:after{
-  background-color:rgb(251, 250, 237);/*ずらしたボックスの背景色*/
+  background-color:rgb(246, 243, 221);/*ずらしたボックスの背景色*/
   border:none;
   content: '';
   position: absolute;/*配置（ここを動かす）*/
