@@ -11,7 +11,7 @@ html
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="shortcut icon", href="/images/favicon2.ico", type="image/x-icon")
   body
-    nav.navbar.navbar-light.bg-light
+    nav.navbar.navbar-dark.bg-dark
       div.navbar-header
         a(href="/").navbar-brand.nav-link Let's BAND!! 
       ul.navbar-nav 
@@ -21,6 +21,6 @@ html
         else 
           li.nav-item 
             a(href="/login").nav-link ログイン  
-    div.container
+    div.container-fluid.p-0
       block content
     script(src="/javascripts/bundle.js")

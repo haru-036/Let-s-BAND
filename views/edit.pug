@@ -1,22 +1,24 @@
 extends layout 
 
 block content 
-  h3.my-3 ルームの編集
-  form(action=`/rooms/${room.roomId}?edit=1`, method="post")
-    input(type="hidden" name="_csrf" value!=csrfToken)
-    div.form-group
-      label(for="roomName") ルーム名
-      input(type="text" name="roomName" value=room.roomName)#roomName.form-control
-    div.form-group
-      label(for="bpm") BPM 
-      input(type="number", name="bpm", value=room.BPM)#bpm.form-control
-    div.form-group
-      h5 メモ
-      textarea(name="memo")#memo.form-control #{room.memo}
-    div.form-group
-      button(type="submit").btn.btn-info 以上の内容でルームを編集する
+  div.mx-5
+    h3.my-3 
+      span.newroom.px-2 ルームの編集
+    form(action=`/rooms/${room.roomId}?edit=1`, method="post")
+      input(type="hidden" name="_csrf" value!=csrfToken)
+      div.form-group
+        label(for="roomName") ルーム名
+        input(type="text" name="roomName" value=room.roomName)#roomName.form-control
+      div.form-group
+        label(for="bpm") BPM 
+        input(type="number", name="bpm", value=room.BPM)#bpm.form-control
+      div.form-group
+        h5 メモ
+        textarea(name="memo")#memo.form-control #{room.memo}
+      div.form-group
+        button(type="submit").btn.btn-secondary 以上の内容でルームを編集する
 
-  h3.my-3 危険な変更
-  form(action=`/rooms/${room.roomId}?delete=1`, method="post") 
-    input(type="hidden" name="_csrf" value!=csrfToken)
-    button(type="submit").btn.btn-danger このルームを削除する
+    h3.my-3 危険な変更
+    form(action=`/rooms/${room.roomId}?delete=1`, method="post") 
+      input(type="hidden" name="_csrf" value!=csrfToken)
+      button(type="submit").btn.btn-danger このルームを削除する

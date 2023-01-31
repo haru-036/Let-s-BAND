@@ -8,7 +8,6 @@ const { v4: uuidv4 } = require('uuid');
 const Room = require('../models/room');
 const User = require('../models/user');
 const Music = require('../models/music');
-const Comment = require('../models/comment');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
@@ -23,7 +22,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
-  res.render('new', { user: req.user });
+  res.render('new', { user: req.user, csrfToken: req.csrfToken() });
 });
 
 router.post('/', authenticationEnsurer, csrfProtection, async (req, res, next) => {
@@ -35,15 +34,14 @@ router.post('/', authenticationEnsurer, csrfProtection, async (req, res, next) =
     BPM: req.body.bpm,
     memo: req.body.memo,
     createdBy: req.user.id,
-    updatedAt: updatedAt
+    updatedAt: updatedAt,
+    csrfToken: req.csrfToken()
   });
   res.redirect('/rooms/' + room.roomId);
 });
 
 router.post('/:roomId/music', authenticationEnsurer, csrfProtection, upload.single('musicUrl'), async (req, res, next) => {
   const path = req.file.path.replace(/\\/g, "/");
-  // const dest = updir + "/" + req.file.originalname;
-  // fs.renameSync(path, dest);
   const updatedAt = new Date();
   const music = await Music.create({
       musicUrl: path,
@@ -51,7 +49,8 @@ router.post('/:roomId/music', authenticationEnsurer, csrfProtection, upload.sing
       memo: req.body.memo,
       createdBy: req.user.id,
       roomId: req.params.roomId,
-      updatedAt: updatedAt
+      updatedAt: updatedAt,
+      csrfToken: req.csrfToken()
     });
   res.redirect('/rooms/' + req.params.roomId);
 });
@@ -84,26 +83,13 @@ router.get('/:roomId', authenticationEnsurer, csrfProtection, async (req, res, n
     musics.forEach((music) => {
       music.formattedUpdatedAt = dayjs(music.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
     });
-    //コメント取得
-    const comments = await Comment.findAll({
-      include:[
-        {
-          model: User,
-          attributes: ['userId', 'username']
-        }],
-      where: { roomId: room.roomId }
-    });
-    const commentMap = new Map(); //key:userId,value:comment
-    comments.forEach((comment) => {
-      commentMap.set(comment.userId, comment.comment);
-    });
 
     res.render('room', {
       user: req.user,
       room: room,
       musics: musics,
       users: [req.user],
-      commentMap: commentMap
+      csrfToken: req.csrfToken()
     });
   }else{
     const err = new Error('指定されたルームは見つかりません');
@@ -154,7 +140,8 @@ router.post('/:roomId', authenticationEnsurer, csrfProtection, async (req, res, 
         BPM: req.body.bpm,
         memo: req.body.memo,
         createdBy: req.user.id,
-        updatedAt: updatedAt
+        updatedAt: updatedAt,
+        csrfToken: req.csrfToken()
       });
       res.redirect('/rooms/' + room.roomId);
     }else if (parseInt(req.query.delete) === 1) {
@@ -196,12 +183,6 @@ router.post('/:roomId/music/:musicId', authenticationEnsurer, async (req, res, n
 });
 
 async function deleteRoomAggregate(roomId) {
-  const comments = await Comment.findAll({
-    where: { roomId: roomId }
-  });
-  const promisesCommentDestroy = comments.map((c) => {return c.destroy();});
-  await Promise.all(promisesCommentDestroy);
-
   const musics = await Music.findAll({
     where: { roomId: roomId }
   });

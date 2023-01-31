@@ -1,7 +1,9 @@
 extends layout
 
 block content
-  form(method="post", action="/rooms").my-3
+  h3.m-5 
+    span.newroom 新しいルームを作る
+  form(method="post", action="/rooms").mx-5
     input(type="hidden" name="_csrf" value!=csrfToken)
     div.form-group
       label(for="roomName") ルーム名 
@@ -12,4 +14,4 @@ block content
     div.form-group
       label(for="memo") メモ
       textarea(name="memo")#memo.form-control
-    button(type="submit").btn.btn-info ルームをつくる 
+    button(type="submit").btn.btn-secondary ルームをつくる 

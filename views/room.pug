@@ -1,70 +1,67 @@
 extends layout
 
 block content
-  div.card.my-3
-    div.card-header.pb-1
-      h1.float-left #{room.roomName}     
-    div.card-body.pb-1
-      p BPM: #{room.BPM}
-      p(style="white-space:pre;") #{room.memo}
-    div.card-footer.pb-1
-      p 作成者：#{room.user.username}
-  - var isMine = user.id === room.user.userId
-  if isMine 
-    div.my-3 
-      a(href=`/rooms/${room.roomId}/edit`).btn.btn-info このルームを編集する
+  div.px-5
+    div.card.my-3
+      div.card-header.pb-1.titlebox
+        h1.float-left #{room.roomName}     
+      div.card-body.pb-1
+        p BPM: #{room.BPM}
+        p(style="white-space:pre;") #{room.memo}
+      div.card-footer.pb-2.titlebox
+        p.float-left 作成者：#{room.user.username}
+        - var isMine = user.id === room.user.userId
+        if isMine 
+          div.float-right
+            a(href=`/rooms/${room.roomId}/edit`).btn.btn-secondary このルームを編集する
 
-  button(data-bs-toggle="modal", data-bs-target="#musicform").btn.btn-info 投稿する 
-  
-  div(tabindex="-1" aria-labelledby="musicFormModal" aria-hidden="true")#musicform.modal.fade
-    div.modal-dialog.modal-dialog-centered.modal-lg
-      div.modal-content
-        div.modal-header
-          h5#modalTitle.modal-title 投稿フォーム
-          button(data-bs-dismiss="modal", aria-label="Close").btn-close 
-        div.modal-body
-          form(action=`/rooms/${room.roomId}/music`, method="post", enctype="multipart/form-data") 
-            input(type="hidden" name="_csrf" value!=csrfToken)
-            div.form-group.mb-3 
-              label(for="musicUrl") 音声ファイル
-              input(type="file" name="musicUrl" accept="audio/*")#musicUrl.form-control
-            div.form-group.mb-3
-              label(for="part") パート 
-              input(type="text", name="part")#part.form-control
-            div.form-group.mb-3 
-              label(for="memo") メモ
-              textarea(name="memo")#memo.form-control 
-            div.form-group.mb-3
-              button(type="submit").btn.btn-info.float-right 投稿する
+    button(data-bs-toggle="modal", data-bs-target="#musicform").btn.btn-secondary.mb-4 投稿する 
+    
+    div(tabindex="-1" aria-labelledby="musicFormModal" aria-hidden="true")#musicform.modal.fade
+      div.modal-dialog.modal-dialog-centered.modal-lg
+        div.modal-content
+          div.modal-header
+            h5#modalTitle.modal-title 投稿フォーム
+            button(data-bs-dismiss="modal", aria-label="Close").btn-close 
+          div.modal-body
+            form(action=`/rooms/${room.roomId}/music`, method="post", enctype="multipart/form-data") 
+              input(type="hidden" name="_csrf" value!=csrfToken)
+              div.form-group.mb-3 
+                label(for="musicUrl") 音声ファイル
+                input(type="file" name="musicUrl" accept="audio/*")#musicUrl.form-control
+              div.form-group.mb-3
+                label(for="part") パート 
+                input(type="text", name="part")#part.form-control
+              div.form-group.mb-3 
+                label(for="memo") メモ
+                textarea(name="memo")#memo.form-control 
+              div.form-group.mb-3
+                button(type="submit").btn.btn-secondary.float-right 投稿する
 
-              
-  div   
-    h3.my-3 投稿一覧
-    each music in musics 
-      div.card.my-3
-        div.card-header.pb-2
-          h5.float-left #{music.user.username}      
-          - let isDeletable = (user.id === music.createdBy)
-          if isDeletable
-            form(name="musicdelete")
-              input(type="hidden", name="id", value=music.musicId) 
-              button(
-                data-room-id=room.roomId
-                data-music-id=music.musicId
-                data-user-id=user.id)#delete-btn.btn.btn-danger.float-right.btn-sm 削除
-        div.card-body.pb-0
-          small.float-right #{music.formattedUpdatedAt}
-          p パート: #{music.part} 
-          audio(controls, src=`${music.musicUrl}`).mb-3
-          p #{music.memo} 
+                
+    div
+      - var hasmusic = musics.length > 0
+      if hasmusic
+        h3.my-3 投稿一覧
+        each music in musics 
+          div.card.my-3
+            div.card-header.pb-2
+              h5.float-left #{music.user.username}      
+              - let isDeletable = (user.id === music.createdBy)
+              if isDeletable
+                form(name="musicdelete")
+                  input(type="hidden", name="id", value=music.musicId) 
+                  button(
+                    data-room-id=room.roomId
+                    data-music-id=music.musicId
+                    data-user-id=user.id)#delete-btn.btn.btn-danger.float-right.btn-sm 削除
+            div.card-body.pb-0
+              small.float-right #{music.formattedUpdatedAt}
+              p パート: #{music.part} 
+              audio(controls, src=`${music.musicUrl}`).mb-3
+              p #{music.memo} 
 
-  table.table.table-bordered
-    tr 
-      th コメント
-      each user in users  
-        td 
-          p
-            small#self-comment #{commentMap.get(user.id)}
-          button(
-            data-room-id=room.roomId 
-            data-user-id=user.id)#self-comment-button.btn.btn-info 編集
+      else 
+        div.box-room
+          | このルームにはまだ投稿がないみたい<br>
+          | 初めての投稿をしてみよう！

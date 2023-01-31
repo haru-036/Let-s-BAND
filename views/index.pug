@@ -1,43 +1,67 @@
 extends layout
 
 block content
-  div.my-3.titlebox
+  div.titlebox.px-5.pt-5.pb-3
     h1 Let's BAND!!
-    p.lead Let's BAND!!は、ルームを作って音楽を投稿できるサービスです
+    p.lead.mt-3 
+      | Let's BAND!!は、ルームを作って音楽を投稿できるサービスです
+    p 楽器が好きな人、歌が好きな人、DTMやMIX、編集が好きな人などなど…<br>
+      | コピーバンドをしたり、作曲ルームを作ったり、使い方はたくさん！
   if user  
-    div 
-      a(href="/rooms/new").btn.btn-info.my-3 ルームをつくる
+    div.titlebox
+      a(href="/rooms/new").btn.btn-green.mb-5.mx-5 ルームをつくる
     -var hasRoom = rooms.length > 0
     if hasRoom 
-      h3.my-3 あなたの作ったルーム一覧
-      table.table.mb-5 
-        tr 
-          th ルーム名
-          th 更新日時
-        each room in rooms 
-          tr 
-            td 
-              a(href=`/rooms/${room.roomId}`) #{room.roomName}
-            td #{room.formattedUpdatedAt}
+      div.mx-5
+        h3.my-4 あなたの作ったルーム一覧
+        table.table.mb-5 
+          thead
+            tr
+              th ルーム名
+              th 更新日時
+          each room in rooms 
+            tr 
+              td 
+                a(href=`/rooms/${room.roomId}`) #{room.roomName}
+              td #{room.formattedUpdatedAt}
 
-    h3.my-3 みんなの新着ルーム
-    table.table
-      tr 
-        th ルーム名
-        th 更新日時
-      each room in allrooms 
-        tr 
-          td 
-            a(href=`/rooms/${room.roomId}`) #{room.roomName}
-          td #{room.formattedUpdatedAt}
+    -var hasAllRoom = allrooms.length > 0
+    if hasAllRoom 
+      div.mx-5
+        h3.my-3 みんなの新着ルーム
+        table.table
+          thead 
+            tr 
+              th ルーム名
+              th 更新日時
+            each room in allrooms 
+              tr 
+                td 
+                  a(href=`/rooms/${room.roomId}`) #{room.roomName}
+                td #{room.formattedUpdatedAt}
 
   else
-    a(href="/login").btn.loginbtn.my-3 さあ、一緒に音楽をやろう！
-    div.card.my-3
-      div.card-body
-        h3 Let's BAND!! とは…
-        ul 
-          li まず曲ごとに”ルーム”を作れます
-          li すでにリリースされている曲をコピーしてもよし、ルームの中でみんなでフレーズを考えてもよし
-          li ルームの中では、録音音源などを投稿できる
-          li コメントやメモ欄でルームの中の人たちとコミュニケーションもとれるよ
+    div.titlebox
+      a(href="/login").btn.btn-secondary.mx-5.mb-5.loginmodal さあ、一緒に音楽をやろう！　▶︎
+    div.my-3
+      div.mt-5.mx-5
+        h3 Let's BAND!! の使い方
+      div.row.mx-5
+        div.col.box.mr-4
+          div.box-title
+            | 01
+          | "ルーム"を作る<br>
+          | or<br>すでにある"ルーム"に入る
+        div.col.box.mr-4
+          div.box-title
+            | 02
+          | 録音した楽器や歌をルームに投稿する
+        div.col.box.mr-4
+          div.box-title
+            | 03 
+          | 編集ができる人は<br>
+          | 投稿されている音源をダウンロードして、合わせたものを投稿する
+        div.col.box
+          div.box-title
+            | 04
+          | 投稿時のメモ欄でルームの中の人たちとコミュニケーションをとってみよう

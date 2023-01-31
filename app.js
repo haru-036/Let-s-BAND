@@ -14,12 +14,9 @@ dotenv.config();
 const User = require('./models/user');
 const Room = require('./models/room');
 const Music = require('./models/music');
-const Comment = require('./models/comment');
 User.sync().then(async () => {
   Room.belongsTo(User, {foreignKey: 'createdBy'});
   Room.sync();
-  Comment.belongsTo(User, {foreignKey: 'userId'});
-  Comment.sync();
   Music.belongsTo(User, {foreignKey: 'createdBy'});
   Music.belongsTo(Room, {foreignKey: 'roomId'});
   Music.sync();
@@ -57,8 +54,6 @@ const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
 const logoutRouter = require('./routes/logout');
 const roomsRouter = require('./routes/rooms');
-const musicsRouter = require('./routes/musics');
-const commentRouter = require('./routes/comments');
 
 const app = express();
 app.use(helmet());
@@ -82,8 +77,6 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/rooms', roomsRouter);
-app.use('/musics', musicsRouter);
-app.use('/rooms', commentRouter);
 
 
 app.get('/auth/google',
