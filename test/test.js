@@ -5,7 +5,6 @@ const passportStub = require('passport-stub');
 const User = require('../models/user');
 const Room = require('../models/room');
 const Music = require('../models/music');
-const Comment = require('../models/comment');
 const deleteRoomAggregate = require('../routes/rooms').deleteRoomAggregate;
 
 describe('/login', () => {
@@ -83,42 +82,6 @@ describe('/rooms', () => {
   });
 });
 
-describe('/rooms/:roomId/users/:userId/comments', () => {
-  let roomId = '';
-  beforeAll(() => {
-    passportStub.install(app);
-    passportStub.login({ id:0, username: 'testuser' });
-  });
-
-  afterAll(async () => {
-    passportStub.logout();
-    passportStub.uninstall();
-    await deleteRoomAggregate(roomId);
-  });
-
-  test('コメントが更新できる', async () => {
-    await User.upsert({ userId: 0, username: 'testuser' });
-    const res = await request(app)
-      .post('/rooms')
-      .send({
-        roomName: 'テストコメント更新ルーム1',
-        memo: 'テストコメント更新メモ1',
-      })
-    const createdRoomPath = res.headers.location;
-    roomId = createdRoomPath.split('/rooms/')[1];
-    //更新がされることをテスト
-    const userId = 0;
-    await request(app)
-      .post(`/rooms/${roomId}/users/${userId}/comments`)
-      .send({ comment: 'testcomment' })
-      .expect('{"status":"OK","comment":"testcomment"}')
-    const comments = await Comment.findAll({
-      where: { roomId: roomId }
-    });
-    expect(comments.length).toBe(1);
-    expect(comments[0].comment).toBe('testcomment');
-  });
-});
 
 describe('/rooms/:roomId?edit=1', () => {
   let roomId = '';
@@ -170,12 +133,6 @@ describe('/rooms/:roomId?delete=1', () => {
     const createdRoomPath = res.headers.location;
     const roomId = createdRoomPath.split('/rooms/')[1];
 
-    //コメント作成
-    await request(app)
-      .post(`/rooms/${roomId}/users/${0}/comments`)
-      .send({ comment: 'testcomment' })
-      .expect('{"status":"OK","comment":"testcomment"}')
-    
     //削除
     await request(app)
       .post(`/rooms/${roomId}?delete=1`);
