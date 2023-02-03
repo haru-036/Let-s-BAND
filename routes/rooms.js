@@ -40,7 +40,7 @@ router.post('/', authenticationEnsurer, csrfProtection, async (req, res, next) =
   res.redirect('/rooms/' + room.roomId);
 });
 
-router.post('/:roomId/music', authenticationEnsurer, csrfProtection, upload.single('musicUrl'), async (req, res, next) => {
+router.post('/:roomId/music', authenticationEnsurer, upload.single('musicUrl'), async (req, res, next) => {
   const path = req.file.path.replace(/\\/g, "/");
   const updatedAt = new Date();
   const music = await Music.create({
@@ -49,8 +49,7 @@ router.post('/:roomId/music', authenticationEnsurer, csrfProtection, upload.sing
       memo: req.body.memo,
       createdBy: req.user.id,
       roomId: req.params.roomId,
-      updatedAt: updatedAt,
-      csrfToken: req.csrfToken()
+      updatedAt: updatedAt
     });
   res.redirect('/rooms/' + req.params.roomId);
 });
